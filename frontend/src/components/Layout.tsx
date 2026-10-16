@@ -28,9 +28,7 @@ export function Layout() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span style={{ background: "var(--dhl-red)", color: "#fff", fontWeight: 800, padding: "4px 8px", borderRadius: 4, letterSpacing: 0.5 }}>
-            DHL
-          </span>
+          <img src="/dhl-logo.svg" alt="DHL" style={{ height: 30, display: "block" }} />
           <strong style={{ fontSize: 15 }}>Hosting Decision Advisor</strong>
         </div>
         <nav style={{ display: "flex", gap: 4, alignItems: "center" }}>
