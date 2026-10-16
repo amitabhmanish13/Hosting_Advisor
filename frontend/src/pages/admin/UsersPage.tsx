@@ -8,6 +8,8 @@ export function UsersPage() {
   const [users, setUsers] = useState<UserAccount[]>([]);
   const [domains, setDomains] = useState<Domain[]>([]);
   const [grant, setGrant] = useState<Record<number, { role: Role; domain_id: string }>>({});
+  const [newDomain, setNewDomain] = useState("");
+  const [domainError, setDomainError] = useState<string | null>(null);
 
   const load = () => {
     api.users().then(setUsers);
@@ -21,9 +23,47 @@ export function UsersPage() {
     load();
   };
 
+  const addDomain = async () => {
+    const name = newDomain.trim();
+    if (!name) return;
+    setDomainError(null);
+    try {
+      await api.createDomain(name);
+      setNewDomain("");
+      load();
+    } catch {
+      setDomainError(`Could not add "${name}" — it may already exist.`);
+    }
+  };
+
   return (
     <div style={{ display: "grid", gap: 18 }}>
       <h1 style={{ fontSize: 22, margin: 0 }}>Users &amp; roles</h1>
+
+      <div className="ds-card">
+        <h2 style={{ fontSize: 16, marginTop: 0 }}>Business units (domains)</h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 14 }}>
+          {domains.map((d) => (
+            <span key={d.id} className="ds-pill" style={{ background: "var(--ds-chip-neutral-bg)", color: "var(--ds-chip-neutral-fg)" }}>
+              {d.name}
+            </span>
+          ))}
+        </div>
+        <div style={{ display: "flex", gap: 8, maxWidth: 420 }}>
+          <input
+            className="ds-input"
+            placeholder="e.g. ITS"
+            value={newDomain}
+            onChange={(e) => setNewDomain(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && addDomain()}
+          />
+          <button className="ds-btn ds-btn-primary" onClick={addDomain}>
+            Add business unit
+          </button>
+        </div>
+        {domainError && <p style={{ color: "var(--dhl-red)", fontSize: 13, marginTop: 8 }}>{domainError}</p>}
+      </div>
+
       <div className="ds-card">
         <table className="ds-table">
           <thead>
