@@ -57,7 +57,7 @@ A Helm chart lives at `helm/dhl-hosting-advisor/`. Full build-and-install walkth
 
 ```bash
 cd backend
-python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest tests/ -v
 ```
 

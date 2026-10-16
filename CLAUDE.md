@@ -146,7 +146,7 @@ role, questionnaire v1.0, the real FEC reference case + a synthetic Public
 Cloud example) — safe to re-run, no-ops once a questionnaire version exists.
 
 ```bash
-cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+cd backend && python3 -m venv .venv && .venv/bin/pip install -r requirements-dev.txt
 .venv/bin/python -m pytest tests/ -v   # engine tests — no DB needed
 ```
 
