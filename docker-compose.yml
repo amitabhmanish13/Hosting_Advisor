@@ -1,0 +1,66 @@
+name: dhl-hosting-advisor
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-dhl}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-dhl}
+      POSTGRES_DB: ${POSTGRES_DB:-dhl_hosting_advisor}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-dhl} -d ${POSTGRES_DB:-dhl_hosting_advisor}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    ports:
+      - "5433:5432"
+
+  mock-idp:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: ["uvicorn", "app.auth.mock_idp:app", "--host", "0.0.0.0", "--port", "8100"]
+    env_file: .env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8100/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 5
+    ports:
+      - "8100:8100"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-dhl}:${POSTGRES_PASSWORD:-dhl}@postgres:5432/${POSTGRES_DB:-dhl_hosting_advisor}
+      OIDC_ISSUER: http://mock-idp:8100
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mock-idp:
+        condition: service_started
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    env_file: .env
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+
+volumes:
+  postgres-data:

@@ -1,0 +1,105 @@
+.ds-card {
+  background: var(--ds-surface);
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius);
+  box-shadow: var(--ds-shadow-card);
+  padding: 20px;
+}
+
+.ds-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: var(--ds-radius-sm);
+  border: 1px solid var(--ds-border);
+  background: var(--ds-surface);
+  color: var(--ds-text-primary);
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.ds-btn:hover {
+  border-color: var(--ds-accent);
+}
+
+.ds-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ds-btn-primary {
+  background: var(--ds-accent);
+  border-color: var(--ds-accent);
+  color: var(--ds-text-on-accent);
+}
+
+.ds-btn-primary:hover {
+  background: var(--ds-accent-hover);
+  border-color: var(--ds-accent-hover);
+}
+
+.ds-input,
+.ds-select,
+.ds-textarea {
+  width: 100%;
+  border: 1px solid var(--ds-border);
+  border-radius: var(--ds-radius-sm);
+  background: var(--ds-surface);
+  color: var(--ds-text-primary);
+  padding: 8px 10px;
+  font-size: 14px;
+}
+
+.ds-input:focus,
+.ds-select:focus,
+.ds-textarea:focus {
+  outline: 2px solid var(--ds-focus);
+  outline-offset: 1px;
+}
+
+.ds-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ds-text-secondary);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.ds-pill {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 3px 10px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.ds-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ds-table th {
+  text-align: left;
+  color: var(--ds-text-secondary);
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--ds-border);
+}
+
+.ds-table td {
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--ds-border);
+  vertical-align: top;
+}
+
+.ds-table tr:hover td {
+  background: var(--ds-bg);
+}

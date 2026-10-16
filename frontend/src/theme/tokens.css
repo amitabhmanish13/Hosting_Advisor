@@ -1,0 +1,97 @@
+/* DHL brand layer — accent only (headers, status emphasis), never general
+   interactive color. Reused verbatim from IDP Final's design-system. */
+:root {
+  --dhl-red: #d40511;
+  --dhl-red-dark: #aa0408;
+  --dhl-yellow: #ffcc00;
+}
+
+/* Semantic layer — components consume only --ds-* tokens. Light by default;
+   switched via [data-theme="dark"] on <html>, same mechanism as IDP Final. */
+:root {
+  --ds-bg: #f7f7f8;
+  --ds-surface: #ffffff;
+  --ds-surface-raised: #ffffff;
+  --ds-border: #e2e2e5;
+  --ds-text-primary: #1a1a1a;
+  --ds-text-secondary: #5c5c63;
+  --ds-text-on-accent: #ffffff;
+
+  --ds-accent: var(--dhl-red);
+  --ds-accent-hover: var(--dhl-red-dark);
+  --ds-focus: #2563eb;
+
+  --ds-chip-private-bg: rgba(37, 99, 235, 0.1);
+  --ds-chip-private-fg: #1d4ed8;
+  --ds-chip-public-bg: rgba(212, 5, 17, 0.1);
+  --ds-chip-public-fg: var(--dhl-red-dark);
+  --ds-chip-warn-bg: rgba(251, 191, 36, 0.15);
+  --ds-chip-warn-fg: #92610a;
+  --ds-chip-neutral-bg: #eceef1;
+  --ds-chip-neutral-fg: #44464b;
+  --ds-chip-success-bg: rgba(16, 185, 129, 0.12);
+  --ds-chip-success-fg: #047857;
+
+  --ds-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.06), 0 1px 1px rgba(0, 0, 0, 0.04);
+  --ds-radius: 10px;
+  --ds-radius-sm: 6px;
+}
+
+:root[data-theme="dark"] {
+  --ds-bg: #15151a;
+  --ds-surface: #1e1e24;
+  --ds-surface-raised: #26262e;
+  --ds-border: #34343d;
+  --ds-text-primary: #f0f0f0;
+  --ds-text-secondary: #9a9aa4;
+
+  --ds-chip-private-bg: rgba(96, 165, 250, 0.15);
+  --ds-chip-private-fg: #93c5fd;
+  --ds-chip-public-bg: rgba(248, 113, 113, 0.15);
+  --ds-chip-public-fg: #fca5a5;
+  --ds-chip-warn-bg: rgba(251, 191, 36, 0.15);
+  --ds-chip-warn-fg: #fbbf24;
+  --ds-chip-neutral-bg: #2d2d36;
+  --ds-chip-neutral-fg: #c7c7cf;
+  --ds-chip-success-bg: rgba(52, 211, 153, 0.15);
+  --ds-chip-success-fg: #6ee7b7;
+
+  --ds-shadow-card: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ds-bg: #15151a;
+    --ds-surface: #1e1e24;
+    --ds-surface-raised: #26262e;
+    --ds-border: #34343d;
+    --ds-text-primary: #f0f0f0;
+    --ds-text-secondary: #9a9aa4;
+    --ds-chip-private-bg: rgba(96, 165, 250, 0.15);
+    --ds-chip-private-fg: #93c5fd;
+    --ds-chip-public-bg: rgba(248, 113, 113, 0.15);
+    --ds-chip-public-fg: #fca5a5;
+    --ds-chip-neutral-bg: #2d2d36;
+    --ds-chip-neutral-fg: #c7c7cf;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--ds-bg);
+  color: var(--ds-text-primary);
+  font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: var(--ds-accent);
+}
+
+button {
+  font-family: inherit;
+}
