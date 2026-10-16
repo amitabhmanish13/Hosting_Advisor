@@ -1,0 +1,25 @@
+{{- $issuer := "" }}
+{{- $browserIssuer := "" }}
+{{- if eq .Values.auth.provider "azuread" }}
+  {{- $issuer = printf "https://login.microsoftonline.com/%s" .Values.auth.azuread.tenantId }}
+  {{- $browserIssuer = $issuer }}
+{{- else }}
+  {{- $issuer = printf "http://%s-mock-idp:8100" (include "dha.name" .) }}
+  {{- $browserIssuer = include "dha.idpUrl" . }}
+{{- end }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "dha.name" . }}-config
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.labels" . | nindent 4 }}
+data:
+  AUTH_PROVIDER: {{ .Values.auth.provider | quote }}
+  OIDC_ISSUER: {{ $issuer | quote }}
+  OIDC_BROWSER_ISSUER: {{ $browserIssuer | quote }}
+  OIDC_CLIENT_ID: {{ .Values.auth.clientId | quote }}
+  OIDC_REDIRECT_URI: {{ printf "%s/auth/callback" (include "dha.backendUrl" .) | quote }}
+  IPP_BASE_URL: {{ .Values.ipp.baseUrl | quote }}
+  CORS_ORIGINS: {{ printf "[%q]" (include "dha.frontendUrl" .) | quote }}
+  DATABASE_URL: "sqlite:////data/dha.db"

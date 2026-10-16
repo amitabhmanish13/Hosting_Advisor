@@ -1,0 +1,15 @@
+DHL Hosting Decision Advisor deployed to namespace {{ .Values.namespace }}.
+
+  Frontend:  {{ include "dha.frontendUrl" . }}
+  Backend:   {{ include "dha.backendUrl" . }}/docs
+{{- if .Values.mockIdp.enabled }}
+  Mock IdP:  {{ include "dha.idpUrl" . }}/login
+{{- end }}
+
+Check rollout status:
+  oc get pods -n {{ .Values.namespace }} -w
+
+If pods aren't Ready yet, the three Routes above will 503 until they are —
+that's expected for the first minute or two, not a misconfiguration.
+
+Full build-and-install walkthrough: ../../OPENSHIFT.md

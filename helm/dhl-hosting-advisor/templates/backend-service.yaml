@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dha.name" . }}-backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "backend" "Release" .Release) | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+  ports:
+    - port: 8000
+      targetPort: 8000

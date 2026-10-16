@@ -1,0 +1,53 @@
+{{- if .Values.mockIdp.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dha.name" . }}-mock-idp
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "mock-idp" "Release" .Release) | nindent 4 }}
+spec:
+  replicas: {{ .Values.mockIdp.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: mock-idp
+  template:
+    metadata:
+      labels:
+        {{- include "dha.componentLabels" (dict "component" "mock-idp" "Release" .Release) | nindent 8 }}
+    spec:
+      containers:
+        - name: mock-idp
+          image: {{ include "dha.image" (dict "name" "dha-backend" "Values" .Values) }}
+          imagePullPolicy: Always
+          command: ["uvicorn", "app.auth.mock_idp:app", "--host", "0.0.0.0", "--port", "8100"]
+          ports:
+            - containerPort: 8100
+          env:
+            - name: OIDC_CLIENT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ include "dha.name" . }}-config
+                  key: OIDC_CLIENT_ID
+            - name: JWT_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dha.name" . }}-secrets
+                  key: jwt-signing-key
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dha.name" . }}-secrets
+                  key: oidc-client-secret
+          resources:
+            {{- toYaml .Values.mockIdp.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: { path: /health, port: 8100 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8100 }
+            initialDelaySeconds: 10
+            periodSeconds: 20
+{{- end }}

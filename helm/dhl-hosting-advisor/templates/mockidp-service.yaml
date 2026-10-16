@@ -1,0 +1,16 @@
+{{- if .Values.mockIdp.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dha.name" . }}-mock-idp
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "mock-idp" "Release" .Release) | nindent 4 }}
+spec:
+  selector:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: mock-idp
+  ports:
+    - port: 8100
+      targetPort: 8100
+{{- end }}

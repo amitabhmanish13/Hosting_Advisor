@@ -1,0 +1,62 @@
+# See ../../OPENSHIFT.md for the full build-and-install walkthrough. The
+# short version: pick route.domain first (everything else derives from it),
+# build the three images referencing that domain, then helm install.
+
+namespace: dhl-hosting-advisor
+
+# Images are expected in THIS namespace's slice of OpenShift's internal
+# registry (image-registry.openshift-image-registry.svc:5000) — pulling
+# same-namespace images needs no imagePullSecret. Point `registry` at an
+# external one instead if you're not using `oc new-build`.
+image:
+  registry: image-registry.openshift-image-registry.svc:5000
+  tag: latest
+
+# The cluster's apps wildcard domain, e.g. apps.mycluster.example.com.
+# Routes are created at:
+#   <release>.<domain>          (frontend, public)
+#   <release>-backend.<domain>  (backend API, public — the browser calls it directly)
+#   <release>-idp.<domain>      (mock IdP login page, public — only when auth.provider=mock)
+route:
+  domain: apps.CHANGEME.example.com
+  tls: true
+
+backend:
+  replicas: 1 # SQLite is single-writer: do not raise this without moving to a real DB first.
+  resources:
+    requests: { cpu: 100m, memory: 256Mi }
+    limits: { cpu: 500m, memory: 512Mi }
+  storage:
+    size: 1Gi
+    storageClassName: "" # empty = cluster default
+
+frontend:
+  replicas: 2
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 200m, memory: 128Mi }
+
+mockIdp:
+  # Local dev/demo identity provider. Set to false once auth.provider is
+  # azuread with a real tenant — nothing else references it at that point.
+  enabled: true
+  replicas: 1
+  resources:
+    requests: { cpu: 50m, memory: 64Mi }
+    limits: { cpu: 200m, memory: 128Mi }
+
+auth:
+  provider: mock # "mock" | "azuread"
+  clientId: dhl-hosting-advisor
+  # clientSecret: set via --set-string auth.clientSecret=... at install time,
+  # never committed here.
+  azuread:
+    tenantId: "" # https://login.microsoftonline.com/<tenantId>
+
+ipp:
+  baseUrl: "http://localhost:4000" # update once the real IPP endpoint is known
+
+# Leave blank to auto-generate a random 32-char key on first install (and
+# keep it stable across upgrades — see templates/secret.yaml). Only set this
+# explicitly if you need a specific value, e.g. to match another environment.
+jwtSigningKey: ""

@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dha.name" . }}-frontend
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "frontend" "Release" .Release) | nindent 4 }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: frontend
+  template:
+    metadata:
+      labels:
+        {{- include "dha.componentLabels" (dict "component" "frontend" "Release" .Release) | nindent 8 }}
+    spec:
+      containers:
+        - name: frontend
+          # VITE_API_BASE_URL is baked in at image build time (see
+          # ../../OPENSHIFT.md) — it must already equal {{ include "dha.backendUrl" . }}
+          # by the time this image was built; this Deployment can't change
+          # it at runtime.
+          image: {{ include "dha.image" (dict "name" "dha-frontend" "Values" .Values) }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: { path: /, port: 8080 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /, port: 8080 }
+            initialDelaySeconds: 10
+            periodSeconds: 20

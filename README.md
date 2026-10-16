@@ -27,7 +27,7 @@ Admin, Assessor (Digital Solutions or DGFF/FEC), Approver (Hosting Advisory Grou
 
 ## Architecture
 
-- **backend/** — FastAPI + PostgreSQL. `app/engine/scoring.py` is a framework-free, unit-tested
+- **backend/** — FastAPI + SQLite. `app/engine/scoring.py` is a framework-free, unit-tested
   port of the workbook's decision rules (knock-out precedence → conflict → near-tie →
   confidence → robustness). `app/engine/scoring_engine` tests include the exact 7 scenarios
   from the workbook's own "Formula Audit" sheet plus the real FEC reference case.
@@ -40,6 +40,10 @@ Admin, Assessor (Digital Solutions or DGFF/FEC), Approver (Hosting Advisory Grou
   it only changes which version *new* assessments use. Every assessment keeps the
   `questionnaire_version_id` it was created with forever, so admin edits can never alter an
   already-completed assessment's questions or score.
+
+## Deploying to OpenShift
+
+A Helm chart lives at `helm/dhl-hosting-advisor/`. Full build-and-install walkthrough: [OPENSHIFT.md](OPENSHIFT.md).
 
 ## Development
 

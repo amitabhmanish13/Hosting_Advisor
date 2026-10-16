@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "dha.name" . }}-backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "backend" "Release" .Release) | nindent 4 }}
+spec:
+  # SQLite is single-writer: more than 1 replica here risks two pods opening
+  # the same file. Move to a real DB before raising this.
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        {{- include "dha.componentLabels" (dict "component" "backend" "Release" .Release) | nindent 8 }}
+    spec:
+      # No fsGroup/runAsUser here on purpose — OpenShift's restricted SCC
+      # assigns both automatically on admission; setting them ourselves
+      # would only matter on plain Kubernetes, which isn't the target here.
+      containers:
+        - name: backend
+          image: {{ include "dha.image" (dict "name" "dha-backend" "Values" .Values) }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: {{ include "dha.name" . }}-config
+          env:
+            - name: JWT_SIGNING_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dha.name" . }}-secrets
+                  key: jwt-signing-key
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "dha.name" . }}-secrets
+                  key: oidc-client-secret
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          readinessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          livenessProbe:
+            httpGet: { path: /health, port: 8000 }
+            initialDelaySeconds: 20
+            periodSeconds: 20
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ include "dha.name" . }}-backend-data

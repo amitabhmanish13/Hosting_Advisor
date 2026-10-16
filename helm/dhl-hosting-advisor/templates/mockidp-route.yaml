@@ -1,0 +1,21 @@
+{{- if .Values.mockIdp.enabled }}
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "dha.name" . }}-idp
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "mock-idp" "Release" .Release) | nindent 4 }}
+spec:
+  host: {{ include "dha.idpHost" . }}
+  to:
+    kind: Service
+    name: {{ include "dha.name" . }}-mock-idp
+  port:
+    targetPort: 8100
+  {{- if .Values.route.tls }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  {{- end }}
+{{- end }}

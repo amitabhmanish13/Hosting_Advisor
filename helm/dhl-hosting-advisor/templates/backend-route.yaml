@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "dha.name" . }}-backend
+  namespace: {{ .Values.namespace }}
+  labels:
+    {{- include "dha.componentLabels" (dict "component" "backend" "Release" .Release) | nindent 4 }}
+spec:
+  host: {{ include "dha.backendHost" . }}
+  to:
+    kind: Service
+    name: {{ include "dha.name" . }}-backend
+  port:
+    targetPort: 8000
+  {{- if .Values.route.tls }}
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
+  {{- end }}
