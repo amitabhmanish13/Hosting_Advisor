@@ -80,9 +80,9 @@ def needs_attention(db: Session = Depends(get_db), user: UserAccount = Depends(g
     items: list[NeedsAttentionItemOut] = []
     for a in rows:
         if a.result and a.result.recommendation == "Near-tie — architecture review required":
-            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue="Near-tie — architecture review required"))
+            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue="Near-tie — needs architecture review"))
         if a.result and not a.result.evidence_complete:
-            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue="Evidence reference missing on one or more answered questions"))
+            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue="Evidence reference missing"))
         if a.status != AssessmentStatus.decided and a.created_at.replace(tzinfo=UTC) < stale_cutoff:
-            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue=f"Stuck in '{a.status.value}' for over {STALE_AFTER_DAYS} days"))
+            items.append(NeedsAttentionItemOut(assessment_id=a.id, app_name=a.app_name, domain=a.domain.name, status=a.status.value, issue=f"Stuck in {a.status.value.capitalize()} for {STALE_AFTER_DAYS}+ days"))
     return items

@@ -2,7 +2,17 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
+import { ConfidencePill, RecommendationPill, StatusPill } from "../../components/StatusPill";
 import type { ByDomainRow, ConfidenceRobustness, NeedsAttentionItem, PortfolioDashboard } from "../../api/types";
+
+function CountRow({ pill, count }: { pill: React.ReactNode; count: number }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, padding: "4px 0" }}>
+      {pill}
+      <strong style={{ fontSize: 14 }}>{count}</strong>
+    </div>
+  );
+}
 
 export function DashboardsPage() {
   const { hasRole } = useAuth();
@@ -31,23 +41,19 @@ export function DashboardsPage() {
 
       <div className="ds-card">
         <div className="ds-label">Total assessments</div>
-        <div style={{ fontSize: 32, fontWeight: 700 }}>{portfolio?.total ?? "—"}</div>
+        <div style={{ fontSize: 32, fontWeight: 700, marginBottom: 12 }}>{portfolio?.total ?? "—"}</div>
         {portfolio && (
-          <div style={{ display: "flex", gap: 24, marginTop: 12, flexWrap: "wrap" }}>
-            <div>
+          <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+            <div style={{ minWidth: 160 }}>
               <div className="ds-label">By status</div>
               {Object.entries(portfolio.by_status).map(([k, v]) => (
-                <div key={k} style={{ fontSize: 14 }}>
-                  {k}: <strong>{v}</strong>
-                </div>
+                <CountRow key={k} pill={<StatusPill status={k} />} count={v} />
               ))}
             </div>
-            <div>
+            <div style={{ minWidth: 200 }}>
               <div className="ds-label">By recommendation</div>
               {Object.entries(portfolio.by_recommendation).map(([k, v]) => (
-                <div key={k} style={{ fontSize: 14 }}>
-                  {k}: <strong>{v}</strong>
-                </div>
+                <CountRow key={k} pill={<RecommendationPill recommendation={k} />} count={v} />
               ))}
             </div>
           </div>
@@ -87,18 +93,16 @@ export function DashboardsPage() {
           Confidence &amp; robustness
         </div>
         {confidence && (
-          <div style={{ display: "flex", gap: 24, flexWrap: "wrap" }}>
-            <div>
+          <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
+            <div style={{ minWidth: 160 }}>
               {Object.entries(confidence.by_confidence).map(([k, v]) => (
-                <div key={k} style={{ fontSize: 14 }}>
-                  {k}: <strong>{v}</strong>
-                </div>
+                <CountRow key={k} pill={<ConfidencePill confidence={k} />} count={v} />
               ))}
             </div>
-            <div>
-              <div style={{ fontSize: 14 }}>Robust: <strong>{confidence.robust_count}</strong></div>
-              <div style={{ fontSize: 14 }}>Fragile: <strong>{confidence.fragile_count}</strong></div>
-              <div style={{ fontSize: 14 }}>Unknown: <strong>{confidence.unknown_count}</strong></div>
+            <div style={{ minWidth: 160 }}>
+              <CountRow pill={<span style={{ fontSize: 14 }}>Robust</span>} count={confidence.robust_count} />
+              <CountRow pill={<span style={{ fontSize: 14 }}>Fragile</span>} count={confidence.fragile_count} />
+              <CountRow pill={<span style={{ fontSize: 14, color: "var(--ds-text-secondary)" }}>Unknown</span>} count={confidence.unknown_count} />
             </div>
           </div>
         )}
@@ -108,20 +112,29 @@ export function DashboardsPage() {
         <div className="ds-label" style={{ marginBottom: 10 }}>
           Needs attention
         </div>
-        {needsAttention.length === 0 && <p style={{ color: "var(--ds-text-secondary)", fontSize: 14 }}>Nothing needs attention right now.</p>}
-        <table className="ds-table">
-          <tbody>
-            {needsAttention.map((item, i) => (
-              <tr key={i}>
-                <td>
-                  <Link to={`/assessments/${item.assessment_id}`}>{item.app_name}</Link>
-                  <div style={{ color: "var(--ds-text-secondary)", fontSize: 12 }}>{item.domain}</div>
-                </td>
-                <td>{item.issue}</td>
+        {needsAttention.length === 0 ? (
+          <p style={{ color: "var(--ds-text-secondary)", fontSize: 14 }}>Nothing needs attention right now.</p>
+        ) : (
+          <table className="ds-table">
+            <thead>
+              <tr>
+                <th>Assessment</th>
+                <th>Issue</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {needsAttention.map((item, i) => (
+                <tr key={i}>
+                  <td>
+                    <Link to={`/assessments/${item.assessment_id}`}>{item.app_name}</Link>
+                    <div style={{ color: "var(--ds-text-secondary)", fontSize: 12 }}>{item.domain}</div>
+                  </td>
+                  <td>{item.issue}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

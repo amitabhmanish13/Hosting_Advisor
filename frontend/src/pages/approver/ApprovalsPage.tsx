@@ -7,7 +7,9 @@ import type { AssessmentListItem } from "../../api/types";
 function Queue({ title, items }: { title: string; items: AssessmentListItem[] }) {
   return (
     <div className="ds-card">
-      <h2 style={{ fontSize: 16, marginTop: 0 }}>{title}</h2>
+      <h2 style={{ fontSize: 16, marginTop: 0 }}>
+        {title} {items.length > 0 && <span style={{ color: "var(--ds-text-secondary)", fontWeight: 400 }}>({items.length})</span>}
+      </h2>
       {items.length === 0 && <p style={{ color: "var(--ds-text-secondary)", fontSize: 14 }}>Nothing waiting here.</p>}
       <table className="ds-table">
         <tbody>

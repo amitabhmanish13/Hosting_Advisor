@@ -84,7 +84,13 @@ export function QuestionEditorPage() {
 
   return (
     <div style={{ display: "grid", gap: 18 }}>
-      <h1 style={{ fontSize: 22, margin: 0 }}>Questionnaire editor — draft</h1>
+      <div>
+        <h1 style={{ fontSize: 22, margin: 0 }}>Questionnaire editor — draft</h1>
+        <p style={{ fontSize: 13, color: "var(--ds-text-secondary)", margin: "4px 0 0" }}>
+          Safe to edit freely: nothing here is live until you publish, and every past assessment stays locked to the
+          version it was scored against.
+        </p>
+      </div>
       {notice && <p style={{ color: "var(--ds-chip-success-fg)" }}>{notice}</p>}
 
       <div className="ds-card">

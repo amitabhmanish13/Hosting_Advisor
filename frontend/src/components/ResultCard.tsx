@@ -5,6 +5,11 @@ export function ResultCard({ result }: { result: AssessmentResult | null }) {
   if (!result) return null;
   const privatePct = result.private_fit != null ? Math.round(result.private_fit * 100) : null;
   const publicPct = result.public_fit != null ? Math.round(result.public_fit * 100) : null;
+  // The pill already states the outcome; only show a second line when the
+  // engine's text has something the pill's short label doesn't (the "why"
+  // on Conflict/Near-tie/Pending) — never repeat "Private Cloud / On-Prem"
+  // or "Public Cloud" verbatim right under their own pill.
+  const [, explanation] = result.recommendation.split(" — ");
 
   return (
     <div className="ds-card">
@@ -23,11 +28,11 @@ export function ResultCard({ result }: { result: AssessmentResult | null }) {
         )}
       </div>
 
-      <p style={{ color: "var(--ds-text-primary)", fontSize: 16, margin: "14px 0 6px", fontWeight: 600 }}>{result.recommendation}</p>
+      {explanation && <p style={{ color: "var(--ds-text-secondary)", fontSize: 14, margin: "12px 0 0" }}>{explanation}</p>}
 
       {privatePct != null && publicPct != null && (
         <>
-          <div style={{ display: "flex", height: 10, borderRadius: 999, overflow: "hidden", background: "var(--ds-chip-neutral-bg)" }}>
+          <div style={{ display: "flex", height: 10, borderRadius: 999, overflow: "hidden", background: "var(--ds-chip-neutral-bg)", marginTop: 14 }}>
             <div style={{ width: `${privatePct}%`, background: "var(--ds-chip-private-fg)" }} />
             <div style={{ width: `${publicPct}%`, background: "var(--ds-chip-public-fg)" }} />
           </div>
