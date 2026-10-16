@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { api } from "../../api/client";
+import { useAuth } from "../../auth/AuthContext";
 import type { ByDomainRow, ConfidenceRobustness, NeedsAttentionItem, PortfolioDashboard } from "../../api/types";
 
 export function DashboardsPage() {
+  const { hasRole } = useAuth();
   const [portfolio, setPortfolio] = useState<PortfolioDashboard | null>(null);
   const [byDomain, setByDomain] = useState<ByDomainRow[]>([]);
   const [confidence, setConfidence] = useState<ConfidenceRobustness | null>(null);
@@ -18,7 +20,14 @@ export function DashboardsPage() {
 
   return (
     <div style={{ display: "grid", gap: 20 }}>
-      <h1 style={{ fontSize: 22, margin: 0 }}>Portfolio overview</h1>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <h1 style={{ fontSize: 22, margin: 0 }}>Portfolio overview</h1>
+        {hasRole("assessor", "admin") && (
+          <Link className="ds-btn ds-btn-primary" to="/assessments/new">
+            + New assessment
+          </Link>
+        )}
+      </div>
 
       <div className="ds-card">
         <div className="ds-label">Total assessments</div>

@@ -40,6 +40,14 @@ export function Layout() {
               My Assessments
             </NavLink>
           )}
+          {hasRole("assessor", "admin") && (
+            <NavLink
+              to="/assessments/new"
+              style={({ isActive }) => ({ ...linkStyle({ isActive }), background: "var(--dhl-red)", color: "#fff" })}
+            >
+              + New Assessment
+            </NavLink>
+          )}
           {hasRole("approver", "admin") && (
             <NavLink to="/approvals" style={linkStyle}>
               Approvals
