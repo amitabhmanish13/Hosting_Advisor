@@ -4,7 +4,7 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
-    database_url: str = "postgresql+psycopg://dhl:dhl@postgres:5432/dhl_hosting_advisor"
+    database_url: str = "sqlite:////data/dha.db"
 
     auth_provider: str = "mock"  # "mock" | "azuread"
     oidc_issuer: str = "http://mock-idp:8100"  # server-to-server: token exchange + JWKS discovery

@@ -1,8 +1,8 @@
-"""${message}
+"""initial schema
 
-Revision ID: ${up_revision}
-Revises: ${down_revision | comma,n}
-Create Date: ${create_date}
+Revision ID: e3833e6b2db9
+Revises: 
+Create Date: 2026-10-16 15:36:56.213660
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '51c804a6791c'
+revision = 'e3833e6b2db9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -31,7 +31,7 @@ def upgrade() -> None:
     sa.Column('changelog', sa.Text(), nullable=True),
     sa.Column('published_by', sa.String(length=255), nullable=True),
     sa.Column('published_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('version_label')
     )
@@ -90,8 +90,8 @@ def upgrade() -> None:
     sa.Column('rto_rpo', sa.String(length=255), nullable=True),
     sa.Column('status', sa.Enum('draft', 'submitted', 'endorsed', 'decided', name='assessmentstatus', native_enum=False), nullable=False),
     sa.Column('created_by', sa.Integer(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['created_by'], ['user_account.id'], ),
     sa.ForeignKeyConstraint(['domain_id'], ['domain.id'], ),
     sa.ForeignKeyConstraint(['questionnaire_version_id'], ['questionnaire_version.id'], ),
@@ -104,7 +104,7 @@ def upgrade() -> None:
     sa.Column('entity_type', sa.String(length=128), nullable=False),
     sa.Column('entity_id', sa.String(length=64), nullable=False),
     sa.Column('detail', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['actor_user_id'], ['user_account.id'], ),
     sa.PrimaryKeyConstraint('id')
     )
@@ -128,7 +128,7 @@ def upgrade() -> None:
     sa.Column('confidence', sa.Enum('high', 'medium', 'low', 'n/a', name='confidence', native_enum=False), nullable=False),
     sa.Column('robust', sa.Boolean(), nullable=True),
     sa.Column('evidence_complete', sa.Boolean(), nullable=False),
-    sa.Column('computed_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('computed_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['assessment_id'], ['assessment.id'], ),
     sa.PrimaryKeyConstraint('assessment_id')
     )
@@ -161,7 +161,7 @@ def upgrade() -> None:
     sa.Column('to_status', sa.Enum('draft', 'submitted', 'endorsed', 'decided', name='assessmentstatus', native_enum=False), nullable=False),
     sa.Column('actor_user_id', sa.Integer(), nullable=False),
     sa.Column('notes', sa.Text(), nullable=True),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('(CURRENT_TIMESTAMP)'), nullable=False),
     sa.ForeignKeyConstraint(['actor_user_id'], ['user_account.id'], ),
     sa.ForeignKeyConstraint(['assessment_id'], ['assessment.id'], ),
     sa.PrimaryKeyConstraint('id')

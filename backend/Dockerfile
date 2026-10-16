@@ -12,8 +12,17 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-RUN useradd -m appuser && chown -R appuser:appuser /app
-USER appuser
+# OpenShift's "restricted" SCC runs the container as an arbitrary, randomly
+# assigned UID (ignoring the USER below) but always keeps it in group 0.
+# Making /app and /data group-writable (not just owner-writable) is what
+# actually makes this work there; the named user+fixed UID below is for
+# plain Docker/Kubernetes, which does honor USER.
+RUN mkdir -p /data \
+    && useradd -u 1001 -g 0 -m -d /home/appuser appuser \
+    && chgrp -R 0 /app /data /home/appuser \
+    && chmod -R g=u /app /data /home/appuser
+
+USER 1001
 
 HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=5 \
     CMD curl -f http://localhost:8000/health || exit 1
