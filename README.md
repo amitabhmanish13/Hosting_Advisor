@@ -6,6 +6,14 @@ unbiased Public Cloud / Private Cloud recommendation with confidence and robustn
 through a Draft → Submitted → Endorsed → Decided governance workflow, and hand off a decided
 assessment into IPP to provision infrastructure.
 
+> **Proprietary / internal use.** Built around DHL's own internal hosting-decision
+> questionnaire and governance content — not licensed for redistribution or public release.
+> This repository is private; keep it that way.
+
+**New to this codebase?** [CLAUDE.md](CLAUDE.md) has the full context — domain rules, key
+invariants, known gaps — written for a developer (or an AI coding assistant) picking this up
+cold. [ARCHITECTURE.md](ARCHITECTURE.md) has the diagrams.
+
 ## Run it
 
 ```bash
